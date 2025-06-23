@@ -11,7 +11,7 @@ import java.util.List;
 public record ApiError(
         @JsonFormat(pattern="dd/MM/yyyy HH:mm")
         LocalDateTime date,
-        HttpStatus code,
+        int code,
         String status,
         List<String> errors
 ) {
