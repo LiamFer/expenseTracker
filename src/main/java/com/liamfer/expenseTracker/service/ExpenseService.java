@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
+
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -24,7 +26,20 @@ public class ExpenseService {
         this.userRepository = userRepository;
     }
 
-    public Page<ExpenseEntity> getExpenses(UserDetails user, Pageable page) {
+    public Page<ExpenseEntity> getExpenses(UserDetails user, Pageable page,
+                                           boolean pastWeek, boolean pastMonth, boolean lastThreeMonths,
+                                           LocalDateTime startDate,
+                                           LocalDateTime endDate) {
+        if(pastWeek){
+            return expenseRepository.findAllByDateBetweenAndOwnerEmail(LocalDateTime.now().minusDays(7),LocalDateTime.now(), user.getUsername(), page);
+        } else if (pastMonth){
+            return expenseRepository.findAllByDateBetweenAndOwnerEmail(LocalDateTime.now().minusMonths(1),LocalDateTime.now(), user.getUsername(), page);
+        } else if (lastThreeMonths){
+            return expenseRepository.findAllByDateBetweenAndOwnerEmail(LocalDateTime.now().minusMonths(3),LocalDateTime.now(), user.getUsername(), page);
+        } else if (startDate != null && endDate != null){
+            return expenseRepository.findAllByDateBetweenAndOwnerEmail(startDate,endDate,user.getUsername(), page);
+        }
+
         return expenseRepository.findAllByOwnerEmail(user.getUsername(), page);
     }
 
