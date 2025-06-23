@@ -7,12 +7,14 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.liamfer.expenseTracker.DTO.ApiError;
 import com.liamfer.expenseTracker.exceptions.CredenciaisInvalidasException;
 import com.liamfer.expenseTracker.exceptions.EmailAlreadyInUseException;
+import com.liamfer.expenseTracker.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +35,30 @@ public class ErrorHandler {
 
     @ExceptionHandler(CredenciaisInvalidasException.class)
     public ResponseEntity<ApiError> credentialsError(CredenciaisInvalidasException ex) {
+        ApiError error = ApiError
+                .builder()
+                .date(LocalDateTime.now())
+                .code(HttpStatus.UNAUTHORIZED.value())
+                .status(HttpStatus.UNAUTHORIZED.name())
+                .errors(List.of(ex.getMessage()))
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiError> notFoundError(ResourceNotFoundException ex) {
+        ApiError error = ApiError
+                .builder()
+                .date(LocalDateTime.now())
+                .code(HttpStatus.NOT_FOUND.value())
+                .status(HttpStatus.NOT_FOUND.name())
+                .errors(List.of(ex.getMessage()))
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ResourceAccessException.class)
+    public ResponseEntity<ApiError> notFoundError(ResourceAccessException ex) {
         ApiError error = ApiError
                 .builder()
                 .date(LocalDateTime.now())

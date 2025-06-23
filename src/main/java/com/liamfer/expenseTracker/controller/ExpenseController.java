@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,4 +33,11 @@ public class ExpenseController {
     public ResponseEntity<ExpenseEntity> addExpense(@RequestBody @Valid ExpenseDTO expense, @AuthenticationPrincipal UserDetails user){
         return ResponseEntity.status(HttpStatus.CREATED).body(expenseService.createExpense(expense,user));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> removeExpense(@PathVariable("id") Long id,@AuthenticationPrincipal UserDetails user){
+        expenseService.deleteExpense(id,user);
+        return ResponseEntity.noContent().build();
+    }
+
 }
