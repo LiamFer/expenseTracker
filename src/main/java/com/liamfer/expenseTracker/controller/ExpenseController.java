@@ -4,14 +4,15 @@ import com.liamfer.expenseTracker.DTO.ExpenseDTO;
 import com.liamfer.expenseTracker.domain.ExpenseEntity;
 import com.liamfer.expenseTracker.service.ExpenseService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/expenses")
@@ -20,6 +21,11 @@ public class ExpenseController {
 
     public ExpenseController(ExpenseService expenseService) {
         this.expenseService = expenseService;
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<ExpenseEntity>> getExpenses(@AuthenticationPrincipal UserDetails user, Pageable page){
+        return ResponseEntity.status(HttpStatus.OK).body(expenseService.getExpenses(user,page));
     }
 
     @PostMapping
