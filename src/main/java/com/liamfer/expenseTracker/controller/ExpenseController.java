@@ -1,6 +1,7 @@
 package com.liamfer.expenseTracker.controller;
 
 import com.liamfer.expenseTracker.DTO.ExpenseDTO;
+import com.liamfer.expenseTracker.DTO.UpdateExpenseDTO;
 import com.liamfer.expenseTracker.domain.ExpenseEntity;
 import com.liamfer.expenseTracker.service.ExpenseService;
 import jakarta.validation.Valid;
@@ -32,6 +33,11 @@ public class ExpenseController {
     @PostMapping
     public ResponseEntity<ExpenseEntity> addExpense(@RequestBody @Valid ExpenseDTO expense, @AuthenticationPrincipal UserDetails user){
         return ResponseEntity.status(HttpStatus.CREATED).body(expenseService.createExpense(expense,user));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ExpenseEntity> updateExpense(@PathVariable("id") Long id, @RequestBody UpdateExpenseDTO expense, @AuthenticationPrincipal UserDetails user){
+        return ResponseEntity.status(HttpStatus.OK).body(expenseService.updateExpense(id,expense,user));
     }
 
     @DeleteMapping("/{id}")

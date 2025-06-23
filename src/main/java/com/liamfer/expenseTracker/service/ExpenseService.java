@@ -1,6 +1,7 @@
 package com.liamfer.expenseTracker.service;
 
 import com.liamfer.expenseTracker.DTO.ExpenseDTO;
+import com.liamfer.expenseTracker.DTO.UpdateExpenseDTO;
 import com.liamfer.expenseTracker.domain.ExpenseEntity;
 import com.liamfer.expenseTracker.domain.UserEntity;
 import com.liamfer.expenseTracker.exceptions.ResourceNotFoundException;
@@ -32,12 +33,23 @@ public class ExpenseService {
         return expenseRepository.save(new ExpenseEntity(expense.title(), expense.price(), expense.category(), expense.date(), owner));
     }
 
+    public ExpenseEntity updateExpense(Long id, UpdateExpenseDTO expense, UserDetails user) {
+        ExpenseEntity existing = this.findExpense(id,user);
+
+        if(expense.title() != null) existing.setTitle(expense.title());
+        if(expense.price() != null) existing.setPrice(expense.price());
+        if(expense.category() != null) existing.setCategory(expense.category());
+        if(expense.date() != null) existing.setDate(expense.date());
+
+        return expenseRepository.save(existing);
+    }
+
     public void deleteExpense(Long id, UserDetails user) {
         ExpenseEntity expense = this.findExpense(id,user);
         expenseRepository.deleteById(id);
     }
 
-    public ExpenseEntity findExpense(Long id,UserDetails user) {
+    private ExpenseEntity findExpense(Long id,UserDetails user) {
         Optional<ExpenseEntity> expense = expenseRepository.findById(id);
         if (expense.isPresent()) {
             if (expense.get().owner.email.equals(user.getUsername())) {
